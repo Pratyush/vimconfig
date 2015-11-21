@@ -35,7 +35,7 @@ Plug 'gilligan/vim-textobj-haskell', {'for' : 'haskell'}
 """"""""""""""""""""""
 
 " LaTeX Plugins:
-Plug 'lervag/vim-latex', {'for': 'tex'}
+Plug 'lervag/vimtex', {'for': 'tex'}
 
 " Haskell Plugins:
 Plug 'raichoo/haskell-vim', {'for' : 'haskell'}
