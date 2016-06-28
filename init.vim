@@ -1,6 +1,8 @@
 call plug#begin('~/.config/nvim/plugged/')
+
 " UI:
-Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " Colourscheme:
 Plug 'altercation/vim-colors-solarized'
@@ -9,12 +11,14 @@ Plug 'altercation/vim-colors-solarized'
 Plug 'Raimondi/delimitMate'
 Plug 'tmhedberg/matchit'
 
+" Fast Folding:
+Plug 'Konfekt/FastFold'
+
 " Tim Pope IS A GOD:
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
-
 
 " Faster Coding:
 Plug 'Shougo/deoplete.nvim'
@@ -22,6 +26,9 @@ Plug 'Shougo/deoplete.nvim'
 " Easy Errorchecking:
 Plug 'benekastah/neomake'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+
+" NotMuch FrontEnd:
+Plug 'felipec/notmuch-vim'
 
 " Nice Search:
 " Plug 'osyo-manga/vim-over'
@@ -42,11 +49,18 @@ Plug 'raichoo/haskell-vim', {'for' : 'haskell'}
 Plug 'nbouscal/vim-stylish-haskell', {'for' : 'haskell'}
 Plug 'eagletmt/neco-ghc', {'for' : 'haskell'}
 Plug 'eagletmt/ghcmod-vim', {'for' : 'haskell'}
-Plug 'chrisdone/hindent/', {'for' : 'haskell'}
+Plug 'chrisdone/hindent', {'for' : 'haskell'}
 
 " Sage Plugins:
-
 Plug 'petRUShka/vim-sage'
+
+" PureScript Plugins:
+Plug 'FrigoEU/psc-ide-vim/', {'for' : 'purescript'}
+Plug 'raichoo/purescript-vim', {'for' : 'purescript'}
+
+" Pandoc Plugins:
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax' 
 
 call plug#end()
 
@@ -120,7 +134,6 @@ syntax enable
 set encoding=utf-8
 
 " Colourscheme:
-set t_Co=256
 colorscheme solarized
 set background=light
 
@@ -133,7 +146,9 @@ set clipboard=unnamedplus
 set wildchar=<Tab>
 set wildignore=*.swp,*.pyc,*.bak,*.class
 set wildignore+=.hg,.git,.svn                    " Version control
-set wildignore+=*.log,*.aux,*.out,*.toc          " LaTeX intermediate files
+set wildignore+=*.log,*.aux,*.out,*.toc,*.fls    " LaTeX intermediate files
+set wildignore+=*.bbl,*.blg,*.fdb_latexmk,*.dvi  " LaTeX intermediate files
+set wildignore+=*.synctex.gz,*.brf,*.pdf         " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
 set wildignore+=*.spl                            " compiled spelling word lists
@@ -157,18 +172,20 @@ set formatoptions+=l
 set colorcolumn=79
 set nowrap
 
-" Enable spell checking for text and LaTeX files
-autocmd FileType tex set spell
+" Enable spell checking for text files
+autocmd FileType text,markdown,html,tex set spell
 
 " Enable soft-wrapping for text files
-autocmd FileType text,markdown,html,tex setlocal wrap linebreak nolist
+autocmd FileType text,markdown,html,tex setlocal wrap "linebreak nolist
 
 " set up Deoplete and completion
 set complete+=U,s,k,kspell,d
-set completeopt=longest,menu,preview
+set completeopt=menu,preview,noselect
 set dictionary+="/usr/dict/words"
 let g:deoplete#enable_at_startup = 1
-inoremap <expr><Tab>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><Tab>  pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr><BS>   deoplete#mappings#smart_close_popup()."\<C-h>"
+
 
 " Set up Statusline
 let g:airline_powerline_fonts = 1
@@ -177,8 +194,9 @@ let g:airline_powerline_fonts = 1
 " LaTeX command
 let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
 
-" Set up vim-stylish-haskell
-let g:stylish_haskell_command="/home/curunir/.cabal/bin/stylish-haskell"
+" Set up vimtex:
+let g:vimtex_fold_enabled = 1
+
 
 " Other miscellaneous options
 set number
@@ -187,9 +205,15 @@ set hidden
 set cursorline
 set title
 set ttimeoutlen=0
-set ttyfast
 set autowrite
+" let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 let $PAGER=''
+
+" Folding:
+set foldmethod=syntax
+set foldnestmax=10
+set foldlevel=0
+set foldenable
 
 set whichwrap+=<,>,h,l
 set display=lastline
