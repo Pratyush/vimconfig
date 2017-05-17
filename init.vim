@@ -22,10 +22,11 @@ Plug 'Konfekt/FastFold'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
-" Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 
 " Faster Coding:
 Plug 'Shougo/deoplete.nvim'
+Plug 'ctrlpvim/ctrlp.vim'
 
 " Easy Error-checking:
 Plug 'benekastah/neomake'
@@ -67,6 +68,10 @@ Plug 'raichoo/purescript-vim', {'for' : 'purescript'}
 " Pandoc Plugins:
 Plug 'vim-pandoc/vim-pandoc', {'for': 'markdown'}
 Plug 'vim-pandoc/vim-pandoc-syntax', {'for': 'markdown'}
+
+" Python Plugins:
+Plug 'zchee/deoplete-jedi', {'for': 'python'}
+
 
 call plug#end()
 
@@ -251,18 +256,29 @@ let g:vimtex_fold_sections = [
       \ "parhead",
       \ ]
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""" RUST """"""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:rust_fold = 1
 let g:rustfmt_autosave = 1
 let g:racer_no_default_keybindings = 1
+
+let g:neomake_open_list = 2
+let g:neomake_place_signs = 1
+let g:neomake_rust_enabled_makers = ['cargo']
 augroup my_neomake_cmds
     autocmd!
     " Have neomake run cargo when Rust files are saved.
-    autocmd BufWritePost *.rs Neomake! cargo
+    autocmd BufWritePost *.rs Neomake cargo
 augroup END
-let g:neomake_rust_enabled_makers = []
+au FileType rust nmap gd <Plug>(rust-def)
+au FileType rust nmap gs <Plug>(rust-def-split)
+au FileType rust nmap gx <Plug>(rust-def-vertical)
+au FileType rust nmap <leader>gd <Plug>(rust-doc)
+
+
+
+
 
 " Other miscellaneous options
 set number
@@ -281,8 +297,10 @@ set foldnestmax=2
 set foldlevel=0
 " set foldenable
 
-" set lazyredraw
-" set synmaxcol=200 
+set lazyredraw
+set synmaxcol=500
 set whichwrap+=<,>,h,l
 set display=lastline
 set breakindent
+set iskeyword-=_
+set mouse=a
