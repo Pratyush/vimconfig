@@ -10,10 +10,15 @@ Plug 'sickill/vim-monokai'
 Plug 'raphamorim/lucario'
 Plug 'chriskempson/base16-vim'
 Plug 'morhetz/gruvbox'
+Plug 'justinmk/molokai'
+Plug 'dikiaap/minimalist'
 
 " Better Brackets:
 Plug 'Raimondi/delimitMate'
 Plug 'tmhedberg/matchit'
+
+" Better Find:
+Plug 'rhysd/clever-f.vim'
 
 " Fast Folding:
 Plug 'Konfekt/FastFold'
@@ -25,45 +30,44 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
 
 " Faster Coding:
-Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ctrlpvim/ctrlp.vim'
 
 " Easy Error-checking:
 Plug 'benekastah/neomake'
-Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 
-" Nice Search:
-" Plug 'osyo-manga/vim-over'
+"  Display changes in git:
+Plug 'airblade/vim-gitgutter'
 
 " TextObjects:
 Plug 'kana/vim-textobj-user'
-Plug 'gilligan/vim-textobj-haskell', {'for' : 'haskell'}
+Plug 'wellle/targets.vim'
 
 """"""""""""""""""""""
 " LANGUAGE SPECIFIC: "
 """"""""""""""""""""""
 
+" General:
+Plug 'sheerun/vim-polyglot'
+Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/echodoc.vim'
+let g:polyglot_disabled = ['latex']
+
+
 " LaTeX Plugins:
 Plug 'lervag/vimtex', {'for': 'tex'}
 
 " Haskell Plugins:
-Plug 'raichoo/haskell-vim', {'for' : 'haskell'}
 Plug 'nbouscal/vim-stylish-haskell', {'for' : 'haskell'}
 Plug 'eagletmt/neco-ghc', {'for' : 'haskell'}
 Plug 'eagletmt/ghcmod-vim', {'for' : 'haskell'}
 Plug 'chrisdone/hindent', {'for' : 'haskell'}
+Plug 'gilligan/vim-textobj-haskell', {'for' : 'haskell'}
 
 " Rust Plugins:
-Plug 'rust-lang/rust.vim', {'for': 'rust'}
-Plug 'racer-rust/vim-racer', {'for': 'rust'}
-Plug 'cespare/vim-toml', {'for': 'toml'}
-
-" Sage Plugins:
-Plug 'petRUShka/vim-sage', {'for': 'sage'}
-
-" PureScript Plugins:
-Plug 'FrigoEU/psc-ide-vim/', {'for' : 'purescript'}
-Plug 'raichoo/purescript-vim', {'for' : 'purescript'}
+" Plug 'racer-rust/vim-racer', {'for': 'rust'}
+Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
+" Plug 'cespare/vim-toml', {'for': 'toml'}
 
 " Pandoc Plugins:
 Plug 'vim-pandoc/vim-pandoc', {'for': 'markdown'}
@@ -148,10 +152,9 @@ syntax enable
 set encoding=utf-8
 
 " Colour scheme:
-" let base16colorspace=256  " Access colors present in 256 colorspace
+let g:gruvbox_italic=1
 colorscheme gruvbox
 set background=dark
-" let g:solarized_termcolors=256
 
 
 " Use System Clipboard:
@@ -191,7 +194,7 @@ set nowrap
 
 " Enable spell checking for text files
 autocmd FileType text,markdown,html,tex set spell
-autocmd FileType tex syntax sync minlines=100
+autocmd FileType tex syntax sync minlines=400
 autocmd FileType tex let b:no_neomake=1
 autocmd FileType mail set fo-=t
 
@@ -201,7 +204,7 @@ autocmd FileType mail,text,markdown,html,tex setlocal wrap
 
 " Disable neomake on tex files to speed up things.
 if !(exists("b:no_neomake"))
-  autocmd! BufWritePost * Neomake
+  let g:neomake_tex_enabled_makers = ['chktex', 'proselint']
 endif
 
 " set up Deoplete and completion
@@ -234,7 +237,7 @@ let g:airline_powerline_fonts = 1
 " let g:airline_right_sep = ''
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
-" let g:airline_theme='base16_flat'
+let g:airline_theme='gruvbox'
 
 " Set up vim-surround
 " LaTeX command
@@ -260,8 +263,10 @@ let g:vimtex_fold_sections = [
 """""""""""""""""""""""""""" RUST """"""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:rust_fold = 1
-let g:rustfmt_autosave = 1
+let g:rustfmt_autosave = 0
 let g:racer_no_default_keybindings = 1
+let g:deoplete#sources#rust#racer_binary='/home/curunir/.cargo/bin/racer'
+let g:deoplete#sources#rust#rust_source_path='/home/curunir/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 
 let g:neomake_open_list = 2
 let g:neomake_place_signs = 1
@@ -271,13 +276,24 @@ augroup my_neomake_cmds
     " Have neomake run cargo when Rust files are saved.
     autocmd BufWritePost *.rs Neomake cargo
 augroup END
-au FileType rust nmap gd <Plug>(rust-def)
-au FileType rust nmap gs <Plug>(rust-def-split)
-au FileType rust nmap gx <Plug>(rust-def-vertical)
-au FileType rust nmap <leader>gd <Plug>(rust-doc)
+
+au FileType rust nmap <buffer> gd <Plug>DeopleteRustGoToDefinitionDefault
+au FileType rust nmap <buffer> <leader>gd <Plug>DeopleteRustShowDocumentation
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""" MARKDOWN """"""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+
+" CtrlP:
+let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+let g:ctrlp_use_caching = 0
+let g:ctrlp_match_window_reversed = 0
+
+" Clever-f:
+let g:clever_f_across_no_line = 1
+let g:clever_f_timeout_ms = 3000
 
 
 " Other miscellaneous options
@@ -288,19 +304,21 @@ set cursorline
 set title
 set ttimeoutlen=0
 set autowrite
-" let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+set termguicolors
 let $PAGER=''
 
 " Folding:
 " set foldmethod=manual
 set foldnestmax=2
 set foldlevel=0
-" set foldenable
+set foldenable
 
 set lazyredraw
-set synmaxcol=500
+" set synmaxcol=500
 set whichwrap+=<,>,h,l
 set display=lastline
+set icm=nosplit
 set breakindent
 set iskeyword-=_
 set mouse=a
