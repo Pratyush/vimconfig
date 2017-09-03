@@ -5,6 +5,8 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " Colourscheme:
+Plug 'rakr/vim-one'
+Plug 'joshdick/onedark.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'sickill/vim-monokai'
 Plug 'raphamorim/lucario'
@@ -49,7 +51,7 @@ Plug 'wellle/targets.vim'
 
 " General:
 Plug 'sheerun/vim-polyglot'
-Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/echodoc.vim'
 let g:polyglot_disabled = ['latex']
 
@@ -75,6 +77,9 @@ Plug 'vim-pandoc/vim-pandoc-syntax', {'for': 'markdown'}
 
 " Python Plugins:
 Plug 'zchee/deoplete-jedi', {'for': 'python'}
+
+" Text Plugins:
+Plug 'reedes/vim-lexical', {'for': ['markdown', 'tex', 'text'] }
 
 
 call plug#end()
@@ -120,9 +125,6 @@ nnoremap <C-q> <C-\><C-n>
 " View Errors:
 nmap <Leader>e :lopen<CR>
 
-" Make:
-nnoremap <Leader>m :make<CR><CR><CR>
-
 " Remove Trailing Spaces:
 nnoremap <Leader>x ma:%s/\s\+$//<CR>:nohl<CR>'a
 
@@ -151,10 +153,22 @@ filetype plugin indent on
 syntax enable
 set encoding=utf-8
 
-" Colour scheme:
-let g:gruvbox_italic=1
-colorscheme gruvbox
+" Colourscheme:
+" let g:gruvbox_italic=1
+colorscheme one
+let g:one_allow_italics = 1
 set background=dark
+"
+" Airline:
+let g:airline_powerline_fonts = 1
+" let g:airline_left_sep = ''
+" let g:airline_right_sep = ''
+" let g:airline_left_sep = ''
+" let g:airline_right_sep = ''
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+let g:airline_theme='one'
+
 
 
 " Use System Clipboard:
@@ -192,79 +206,17 @@ set colorcolumn=79
 set nowrap
 
 
-" Enable spell checking for text files
-autocmd FileType text,markdown,html,tex set spell
-autocmd FileType tex syntax sync minlines=400
-autocmd FileType tex let b:no_neomake=1
-autocmd FileType mail set fo-=t
 
-" Enable soft-wrapping for text files
-autocmd FileType mail,text,markdown,html,tex setlocal wrap
-
-
-" Disable neomake on tex files to speed up things.
-if !(exists("b:no_neomake"))
-  let g:neomake_tex_enabled_makers = ['chktex', 'proselint']
-endif
-
-" set up Deoplete and completion
-set complete+=U,s,k,kspell,d
-set completeopt=menu,preview,noselect
-set dictionary+="/usr/dict/words"
-let g:deoplete#enable_at_startup = 1
-inoremap <expr><Tab>  pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr><BS>   deoplete#mappings#smart_close_popup()."\<C-h>"
-if !exists('g:deoplete#omni#input_patterns')
-      let g:deoplete#omni#input_patterns = {}
-  endif
-  let g:deoplete#omni#input_patterns.tex = '\\(?:'
-        \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
-        \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
-        \ . '|hyperref\s*\[[^]]*'
-        \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
-        \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ .')'
-
-
-
-
-" Set up Statusline
-let g:airline_powerline_fonts = 1
-" let g:airline_left_sep = ''
-" let g:airline_right_sep = ''
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline_theme='gruvbox'
-
-" Set up vim-surround
-" LaTeX command
-let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
-
-" Set up vimtex:
-let g:vimtex_fold_enabled = 0
-let g:vimtex_fold_manual = 1
-let g:vimtex_view_method = "zathura"
-let g:vimtex_imaps_enables = 0
-let g:vimtex_latexmk_progname = 'nvr'
-let g:tex_fast="bMpr"
-let g:vimtex_fold_sections = [
-      \ "part",
-      \ "chapter",
-      \ "section",
-      \ "subsection",
-      \ "subsubsection",
-      \ "parhead",
-      \ ]
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""" RUST """"""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 let g:rust_fold = 1
 let g:rustfmt_autosave = 0
 let g:racer_no_default_keybindings = 1
+
+let g:deoplete#sources#rust#disable_keymap=1
 let g:deoplete#sources#rust#racer_binary='/home/curunir/.cargo/bin/racer'
 let g:deoplete#sources#rust#rust_source_path='/home/curunir/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 
@@ -277,23 +229,94 @@ augroup my_neomake_cmds
     autocmd BufWritePost *.rs Neomake cargo
 augroup END
 
-au FileType rust nmap <buffer> gd <Plug>DeopleteRustGoToDefinitionDefault
-au FileType rust nmap <buffer> <leader>gd <Plug>DeopleteRustShowDocumentation
+au FileType rust nmap <buffer> gd <Plug>DeopleteRustGoToDefinitionSplit
+au FileType rust nmap <buffer> <localleader>gd <Plug>DeopleteRustShowDocumentation
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""" MARKDOWN """"""""""""""""""""""""""
+"""""""""""""""""""""""""""" TEXT """"""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Enable soft-wrapping for text files
+autocmd FileType mail,text,markdown,html,tex setlocal wrap
+" Enable spell checking for text files
+autocmd FileType text,markdown,html,tex set spell
+autocmd FileType tex syntax sync minlines=400
+" autocmd FileType tex let b:no_neomake=1
+autocmd FileType mail set fo-=t
+
+" Set up vim-surround for LaTeX command:
+let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
+
+let g:tex_fast="bMpr"
+
+" Set up vimtex:
+" let g:vimtex_fold_enabled = 0
+" let g:vimtex_fold_manual = 1
+
+let g:vimtex_imaps_enables = 0
+
+" let g:vimtex_quickfix_mode = 2
+" let g:vimtex_quickfix_open_on_warning = 1
+
+let g:vimtex_view_method = "zathura"
+let g:vimtex_latexmk_progname = 'nvr'
+
+" let g:vimtex_compiler_latexmk_options = [
+"       \   '-pdf',
+"       \   '-verbose',
+"       \   '-file-line-error',
+"       \   '-synctex=1',
+"       \   '-interaction=nonstopmode',
+"       \ ]
+
+let g:vimtex_fold_sections = [
+      \ "part",
+      \ "chapter",
+      \ "section",
+      \ "subsection",
+      \ "subsubsection",
+      \ "parhead",
+      \ ]
+if !exists('g:deoplete#omni#input_patterns')
+  let g:deoplete#omni#input_patterns = {}
+endif
+autocmd FileType tex let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
+" Neomake:
+let g:neomake_tex_enabled_makers = ['chktex', 'proselint']
+
+
+augroup lexical
+  autocmd!
+  autocmd FileType markdown,mkd,tex call lexical#init()
+  autocmd FileType textile call lexical#init()
+  autocmd FileType text call lexical#init({ 'spell': 0 })
+augroup END
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""" MISC """"""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " CtrlP:
 let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
 let g:ctrlp_use_caching = 0
-let g:ctrlp_match_window_reversed = 0
+" let g:ctrlp_match_window_reversed = 0
 
 " Clever-f:
 let g:clever_f_across_no_line = 1
 let g:clever_f_timeout_ms = 3000
+
+
+" Deoplete:
+set complete+=U,s,k,kspell,d
+set completeopt=menu,preview,noselect
+set dictionary+="/usr/dict/words"
+let g:deoplete#enable_at_startup = 1
+inoremap <expr><Tab>  pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr><BS>   deoplete#mappings#smart_close_popup()."\<C-h>"
+if !exists('g:deoplete#omni#input_patterns')
+  let g:deoplete#omni#input_patterns = {}
+endif
 
 
 " Other miscellaneous options
@@ -315,10 +338,9 @@ set foldlevel=0
 set foldenable
 
 set lazyredraw
-" set synmaxcol=500
 set whichwrap+=<,>,h,l
 set display=lastline
 set icm=nosplit
 set breakindent
-set iskeyword-=_
+" set iskeyword-=_
 set mouse=a
