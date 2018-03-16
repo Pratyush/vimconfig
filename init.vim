@@ -3,17 +3,10 @@ call plug#begin('~/.config/nvim/plugged/')
 " UI:
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'ryanoasis/vim-devicons'
 
 " Colourscheme:
-Plug 'rakr/vim-one'
 Plug 'joshdick/onedark.vim'
-Plug 'altercation/vim-colors-solarized'
-Plug 'sickill/vim-monokai'
-Plug 'raphamorim/lucario'
-Plug 'chriskempson/base16-vim'
-Plug 'morhetz/gruvbox'
-Plug 'justinmk/molokai'
-Plug 'dikiaap/minimalist'
 
 " Better Brackets:
 Plug 'Raimondi/delimitMate'
@@ -50,10 +43,7 @@ Plug 'wellle/targets.vim'
 """"""""""""""""""""""
 
 " General:
-Plug 'sheerun/vim-polyglot'
-" Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/echodoc.vim'
-let g:polyglot_disabled = ['latex']
 
 
 " LaTeX Plugins:
@@ -67,9 +57,9 @@ Plug 'chrisdone/hindent', {'for' : 'haskell'}
 Plug 'gilligan/vim-textobj-haskell', {'for' : 'haskell'}
 
 " Rust Plugins:
-" Plug 'racer-rust/vim-racer', {'for': 'rust'}
+Plug 'racer-rust/vim-racer', {'for': 'rust'}
 Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
-" Plug 'cespare/vim-toml', {'for': 'toml'}
+Plug 'cespare/vim-toml', {'for': 'toml'}
 
 " Pandoc Plugins:
 Plug 'vim-pandoc/vim-pandoc', {'for': 'markdown'}
@@ -140,6 +130,12 @@ nnoremap J gT
 " Better VIM: "
 """""""""""""""
 
+" Colourscheme:
+set termguicolors
+let g:one_allow_italics = 1
+colorscheme onedark
+set background=dark
+
 " Better Indentation:
 set expandtab
 set shiftwidth=2
@@ -153,22 +149,12 @@ filetype plugin indent on
 syntax enable
 set encoding=utf-8
 
-" Colourscheme:
-" let g:gruvbox_italic=1
-colorscheme one
-let g:one_allow_italics = 1
-set background=dark
-"
 " Airline:
 let g:airline_powerline_fonts = 1
-" let g:airline_left_sep = ''
-" let g:airline_right_sep = ''
-" let g:airline_left_sep = ''
-" let g:airline_right_sep = ''
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline_theme='one'
-
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+let g:airline_theme='onedark'
+" let g:airline#extensions#ale#enabled = 1
 
 
 " Use System Clipboard:
@@ -205,44 +191,74 @@ set formatoptions+=l
 set colorcolumn=79
 set nowrap
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""" NEOMAKE: """""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+call neomake#configure#automake('rw', 1000)
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""" RUST """"""""""""""""""""""""""""
+""""""""""""""""""""""""""""" ALE: """""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" let g:ale_set_loclist = 0
+" let g:ale_set_quickfix = 1
+" let g:ale_open_list = 1
+" let g:ale_lint_on_text_changed = 'never'
+" let g:ale_linters = { 'rust': ['cargo'] }
+" let g:ale_rust_cargo_use_check = 1
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""" RUST: """""""""""""""""""""""""""
+
+" let g:LanguageClient_serverCommands = {
+"     \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+"     \ }
+" if executable('rls')
+"     au User lsp_setup call lsp#register_server({
+"         \ 'name': 'rls',
+"         \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+"         \ 'whitelist': ['rust'],
+"         \ })
+" endif
+
+" nnoremap <silent> <leader>i :LspHover<CR>
+" nnoremap <silent> <leader>d :LspDefinition<CR>
+" nnoremap <silent> <leader>r :LspRename<CR>
+" nnoremap <silent> <leader>f :LspDocumentFormat<CR>
+
+let g:neomake_open_list = 2
+let g:neomake_place_signs = 1
+let g:neomake_rust_enabled_makers = ['cargo']
+" augroup my_neomake_cmds
+"     autocmd!
+"     " Have neomake run cargo when Rust files are saved.
+"     autocmd BufWritePost *.rs Neomake cargo
+" augroup END
 
 let g:rust_fold = 1
 let g:rustfmt_autosave = 0
 let g:racer_no_default_keybindings = 1
 
 let g:deoplete#sources#rust#disable_keymap=1
-let g:deoplete#sources#rust#racer_binary='/home/curunir/.cargo/bin/racer'
-let g:deoplete#sources#rust#rust_source_path='/home/curunir/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
+let g:deoplete#sources#rust#racer_binary='/home/mithrandir/.cargo/bin/racer'
+let g:deoplete#sources#rust#rust_source_path='/home/mithrandir/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 
-let g:neomake_open_list = 2
-let g:neomake_place_signs = 1
-let g:neomake_rust_enabled_makers = ['cargo']
-augroup my_neomake_cmds
-    autocmd!
-    " Have neomake run cargo when Rust files are saved.
-    autocmd BufWritePost *.rs Neomake cargo
-augroup END
-
-au FileType rust nmap <buffer> gd <Plug>DeopleteRustGoToDefinitionSplit
+au FileType rust nmap <buffer> <Leader>d <Plug>DeopleteRustGoToDefinitionSplit
 au FileType rust nmap <buffer> <localleader>gd <Plug>DeopleteRustShowDocumentation
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""" TEXT """"""""""""""""""""""""""""
+"""""""""""""""""""""""""""" TEXT: """""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Enable soft-wrapping for text files
 autocmd FileType mail,text,markdown,html,tex setlocal wrap
 " Enable spell checking for text files
 autocmd FileType text,markdown,html,tex set spell
+
 autocmd FileType tex syntax sync minlines=400
-" autocmd FileType tex let b:no_neomake=1
+
 autocmd FileType mail set fo-=t
 
 " Set up vim-surround for LaTeX command:
@@ -251,40 +267,22 @@ let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
 let g:tex_fast="bMpr"
 
 " Set up vimtex:
-" let g:vimtex_fold_enabled = 0
-" let g:vimtex_fold_manual = 1
+" let g:vimtex_fold_enabled = 1
+let g:vimtex_imaps_enabled = 0
 
-let g:vimtex_imaps_enables = 0
+let g:vimtex_quickfix_enabled = 1
+let g:vimtex_quickfix_method = "pplatex"
+let g:vimtex_quickfix_mode = 2
+let g:vimtex_quickfix_open_on_warning = 1
 
-" let g:vimtex_quickfix_mode = 2
-" let g:vimtex_quickfix_open_on_warning = 1
-
-let g:vimtex_view_method = "zathura"
 let g:vimtex_latexmk_progname = 'nvr'
+let g:vimtex_view_method = "zathura"
 
-" let g:vimtex_compiler_latexmk_options = [
-"       \   '-pdf',
-"       \   '-verbose',
-"       \   '-file-line-error',
-"       \   '-synctex=1',
-"       \   '-interaction=nonstopmode',
-"       \ ]
-
-let g:vimtex_fold_sections = [
-      \ "part",
-      \ "chapter",
-      \ "section",
-      \ "subsection",
-      \ "subsubsection",
-      \ "parhead",
-      \ ]
 if !exists('g:deoplete#omni#input_patterns')
   let g:deoplete#omni#input_patterns = {}
 endif
-autocmd FileType tex let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
-" Neomake:
-let g:neomake_tex_enabled_makers = ['chktex', 'proselint']
 
+autocmd FileType tex let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
 
 augroup lexical
   autocmd!
@@ -320,15 +318,13 @@ endif
 
 
 " Other miscellaneous options
-set number
-set relativenumber
+" set number
+" set relativenumber
 set hidden
 set cursorline
 set title
 set ttimeoutlen=0
 set autowrite
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-set termguicolors
 let $PAGER=''
 
 " Folding:
