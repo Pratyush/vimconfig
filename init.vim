@@ -236,6 +236,7 @@ let g:neomake_rust_enabled_makers = ['cargo']
 "     autocmd BufWritePost *.rs Neomake cargo
 " augroup END
 
+let g:rust_conceal = 1
 let g:rust_fold = 1
 let g:rustfmt_autosave = 0
 let g:racer_no_default_keybindings = 1
@@ -276,6 +277,7 @@ let g:vimtex_quickfix_mode = 2
 let g:vimtex_quickfix_open_on_warning = 1
 
 let g:vimtex_latexmk_progname = 'nvr'
+let g:vimtex_compiler_progname = 'nvr'
 let g:vimtex_view_method = "zathura"
 
 if !exists('g:deoplete#omni#input_patterns')
