@@ -1,0 +1,5 @@
+{
+  "coc.preferences.diagnostic.messageTarget": "echo",
+  "coc.preferences.diagnostic.refreshAfterSave": true,
+  "coc.preferences.diagnostic.virtualText": true
+}

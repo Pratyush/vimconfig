@@ -6,7 +6,11 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
 
 " Colourscheme:
+Plug 'iCyMind/NeoSolarized'
 Plug 'joshdick/onedark.vim'
+Plug 'srcery-colors/srcery-vim'
+Plug 'nightsense/snow'
+Plug 'arcticicestudio/nord-vim'
 
 " Better Brackets:
 Plug 'Raimondi/delimitMate'
@@ -18,18 +22,16 @@ Plug 'rhysd/clever-f.vim'
 " Fast Folding:
 Plug 'Konfekt/FastFold'
 
-" Tim Pope IS A GOD:
+" Tim Pope:
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
 
 " Faster Coding:
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+Plug 'w0rp/ale'
 Plug 'ctrlpvim/ctrlp.vim'
-
-" Easy Error-checking:
-Plug 'benekastah/neomake'
 
 "  Display changes in git:
 Plug 'airblade/vim-gitgutter'
@@ -49,16 +51,7 @@ Plug 'Shougo/echodoc.vim'
 " LaTeX Plugins:
 Plug 'lervag/vimtex', {'for': 'tex'}
 
-" Haskell Plugins:
-Plug 'nbouscal/vim-stylish-haskell', {'for' : 'haskell'}
-Plug 'eagletmt/neco-ghc', {'for' : 'haskell'}
-Plug 'eagletmt/ghcmod-vim', {'for' : 'haskell'}
-Plug 'chrisdone/hindent', {'for' : 'haskell'}
-Plug 'gilligan/vim-textobj-haskell', {'for' : 'haskell'}
-
 " Rust Plugins:
-Plug 'racer-rust/vim-racer', {'for': 'rust'}
-Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
 Plug 'cespare/vim-toml', {'for': 'toml'}
 
 " Pandoc Plugins:
@@ -66,11 +59,15 @@ Plug 'vim-pandoc/vim-pandoc', {'for': 'markdown'}
 Plug 'vim-pandoc/vim-pandoc-syntax', {'for': 'markdown'}
 
 " Python Plugins:
-Plug 'zchee/deoplete-jedi', {'for': 'python'}
+
+" OCaml Plugins:
+Plug 'rgrinberg/vim-ocaml'
 
 " Text Plugins:
 Plug 'reedes/vim-lexical', {'for': ['markdown', 'tex', 'text'] }
 
+" Fish:
+Plug 'dag/vim-fish', {'for': ['fish']}
 
 call plug#end()
 
@@ -132,9 +129,16 @@ nnoremap J gT
 
 " Colourscheme:
 set termguicolors
-let g:one_allow_italics = 1
-colorscheme onedark
-set background=dark
+if strftime('%H') >= 7 && strftime('%H') < 19
+  set background=light
+else
+  set background=dark
+endif
+let g:airline_theme = 'nord'
+let g:nord_italic_comments = 1
+let g:nord_underline = 1
+let g:nord_italic = 1
+colorscheme nord
 
 " Better Indentation:
 set expandtab
@@ -153,8 +157,8 @@ set encoding=utf-8
 let g:airline_powerline_fonts = 1
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
-let g:airline_theme='onedark'
-" let g:airline#extensions#ale#enabled = 1
+" let g:airline_theme='onedark'
+let g:airline#extensions#ale#enabled = 1
 
 
 " Use System Clipboard:
@@ -192,66 +196,60 @@ set colorcolumn=79
 set nowrap
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""""" NEOMAKE: """""""""""""""""""""""""""
+""""""""""""""""""""""""""""" COC: """""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Better display for messages
+set cmdheight=2
 
-call neomake#configure#automake('rw', 1000)
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""""""""" ALE: """""""""""""""""""""""""""
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" let g:ale_set_loclist = 0
-" let g:ale_set_quickfix = 1
-" let g:ale_open_list = 1
-" let g:ale_lint_on_text_changed = 'never'
-" let g:ale_linters = { 'rust': ['cargo'] }
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+"
+
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+let g:ale_open_list = 1
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_linters = { 'rust': [] }
 " let g:ale_rust_cargo_use_check = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""" RUST: """""""""""""""""""""""""""
 
-" let g:LanguageClient_serverCommands = {
-"     \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-"     \ }
-" if executable('rls')
-"     au User lsp_setup call lsp#register_server({
-"         \ 'name': 'rls',
-"         \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
-"         \ 'whitelist': ['rust'],
-"         \ })
-" endif
-
-" nnoremap <silent> <leader>i :LspHover<CR>
-" nnoremap <silent> <leader>d :LspDefinition<CR>
-" nnoremap <silent> <leader>r :LspRename<CR>
-" nnoremap <silent> <leader>f :LspDocumentFormat<CR>
-
-let g:neomake_open_list = 2
-let g:neomake_place_signs = 1
-let g:neomake_rust_enabled_makers = ['cargo']
-" augroup my_neomake_cmds
-"     autocmd!
-"     " Have neomake run cargo when Rust files are saved.
-"     autocmd BufWritePost *.rs Neomake cargo
-" augroup END
-
 let g:rust_conceal = 1
-let g:rust_fold = 1
+" let g:rust_fold = 1
 let g:rustfmt_autosave = 0
 let g:racer_no_default_keybindings = 1
-
-let g:deoplete#sources#rust#disable_keymap=1
-let g:deoplete#sources#rust#racer_binary='/home/mithrandir/.cargo/bin/racer'
-let g:deoplete#sources#rust#rust_source_path='/home/mithrandir/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
-
-au FileType rust nmap <buffer> <Leader>d <Plug>DeopleteRustGoToDefinitionSplit
-au FileType rust nmap <buffer> <localleader>gd <Plug>DeopleteRustShowDocumentation
-
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""" TEXT: """""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:neosolarized_visibility = "high"
+
+let g:neosolarized_bold = 1
+let g:neosolarized_underline = 1
+let g:neosolarized_italic = 1
+augroup TeX
+  autocmd!
+  autocmd FileType tex colorscheme NeoSolarized
+  autocmd FileType tex AirlineTheme solarized
+augroup END
 
 " Enable soft-wrapping for text files
 autocmd FileType mail,text,markdown,html,tex setlocal wrap
@@ -261,6 +259,10 @@ autocmd FileType text,markdown,html,tex set spell
 autocmd FileType tex syntax sync minlines=400
 
 autocmd FileType mail set fo-=t
+augroup CompileTeX
+    autocmd FileType tex
+        \ autocmd! CompileTeX BufWritePost <buffer> VimtexCompile
+augroup END
 
 " Set up vim-surround for LaTeX command:
 let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
@@ -276,15 +278,23 @@ let g:vimtex_quickfix_method = "pplatex"
 let g:vimtex_quickfix_mode = 2
 let g:vimtex_quickfix_open_on_warning = 1
 
-let g:vimtex_latexmk_progname = 'nvr'
+let g:vimtex_compiler_method = 'latexrun'
+" let g:vimtex_compiler_latexrun = 'nvr'
+" let g:vimtex_latexmk_progname = 'nvr'
 let g:vimtex_compiler_progname = 'nvr'
 let g:vimtex_view_method = "zathura"
 
-if !exists('g:deoplete#omni#input_patterns')
-  let g:deoplete#omni#input_patterns = {}
-endif
+let g:vimtex_compiler_latexrun = {
+      \ 'backend' : "nvim",
+      \ 'background' : 1,
+      \ 'build_dir' : '',
+      \ 'options' : [
+      \   '--verbose-cmds',
+      \   '--latex-args="-synctex=1"',
+      \   '--latex-args="-halt-on-error"',
+      \ ],
+      \}
 
-autocmd FileType tex let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
 
 augroup lexical
   autocmd!
@@ -307,21 +317,31 @@ let g:clever_f_across_no_line = 1
 let g:clever_f_timeout_ms = 3000
 
 
-" Deoplete:
+" Autocompletion:
 set complete+=U,s,k,kspell,d
 set completeopt=menu,preview,noselect
 set dictionary+="/usr/dict/words"
-let g:deoplete#enable_at_startup = 1
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <expr><Tab>  pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr><BS>   deoplete#mappings#smart_close_popup()."\<C-h>"
-if !exists('g:deoplete#omni#input_patterns')
-  let g:deoplete#omni#input_patterns = {}
-endif
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " Other miscellaneous options
 " set number
-" set relativenumber
+set relativenumber
 set hidden
 set cursorline
 set title
@@ -330,10 +350,15 @@ set autowrite
 let $PAGER=''
 
 " Folding:
-" set foldmethod=manual
+set foldmethod=manual
 set foldnestmax=2
 set foldlevel=0
 set foldenable
+" augroup remember_folds
+"   autocmd!
+"   autocmd BufWinLeave * mkview
+"   autocmd BufWinEnter * silent! loadview
+" augroup END
 
 set lazyredraw
 set whichwrap+=<,>,h,l
