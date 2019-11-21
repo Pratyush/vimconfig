@@ -29,7 +29,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
 
 " Faster Coding:
-Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'w0rp/ale'
 Plug 'ctrlpvim/ctrlp.vim'
 
@@ -256,7 +256,7 @@ autocmd FileType mail,text,markdown,html,tex setlocal wrap
 " Enable spell checking for text files
 autocmd FileType text,markdown,html,tex set spell
 
-autocmd FileType tex syntax sync minlines=400
+autocmd FileType tex syntax sync minlines=200
 
 autocmd FileType mail set fo-=t
 augroup CompileTeX
@@ -267,7 +267,7 @@ augroup END
 " Set up vim-surround for LaTeX command:
 let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
 
-let g:tex_fast="bMpr"
+let g:tex_fast="mMr"
 
 " Set up vimtex:
 " let g:vimtex_fold_enabled = 1
