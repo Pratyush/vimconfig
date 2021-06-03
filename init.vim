@@ -273,8 +273,8 @@ let g:tex_fast="mMr"
 " let g:vimtex_fold_enabled = 1
 let g:vimtex_imaps_enabled = 0
 
-let g:vimtex_quickfix_enabled = 1
-let g:vimtex_quickfix_method = "pplatex"
+" let g:vimtex_quickfix_enabled = 1
+" let g:vimtex_quickfix_method = "pplatex"
 let g:vimtex_quickfix_mode = 2
 let g:vimtex_quickfix_open_on_warning = 1
 
@@ -290,8 +290,7 @@ let g:vimtex_compiler_latexrun = {
       \ 'build_dir' : '',
       \ 'options' : [
       \   '--verbose-cmds',
-      \   '--latex-args="-synctex=1"',
-      \   '--latex-args="-halt-on-error"',
+      \   '--latex-args="-synctex=1 -halt-on-error -shell-escape"',
       \ ],
       \}
 
