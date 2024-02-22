@@ -225,8 +225,7 @@ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_linters = { 'rust': [] }
-" let g:ale_rust_cargo_use_check = 1
+let g:ale_linters = { 'rust': [], 'latex': [] }
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""" RUST: """""""""""""""""""""""""""
@@ -247,8 +246,8 @@ let g:neosolarized_underline = 1
 let g:neosolarized_italic = 1
 augroup TeX
   autocmd!
-  autocmd FileType tex colorscheme NeoSolarized
-  autocmd FileType tex AirlineTheme solarized
+  autocmd FileType tex colorscheme onedark
+  autocmd FileType tex AirlineTheme onedark
 augroup END
 
 " Enable soft-wrapping for text files
@@ -259,10 +258,10 @@ autocmd FileType text,markdown,html,tex set spell
 autocmd FileType tex syntax sync minlines=200
 
 autocmd FileType mail set fo-=t
-augroup CompileTeX
-    autocmd FileType tex
-        \ autocmd! CompileTeX BufWritePost <buffer> VimtexCompile
-augroup END
+" augroup CompileTeX
+"     autocmd FileType tex
+"         \ autocmd! CompileTeX BufWritePost <buffer> VimtexCompile
+" augroup END
 
 " Set up vim-surround for LaTeX command:
 let g:surround_{char2nr('c')} = "\\\1command\1{\r}"
@@ -278,21 +277,31 @@ let g:vimtex_imaps_enabled = 0
 let g:vimtex_quickfix_mode = 2
 let g:vimtex_quickfix_open_on_warning = 1
 
-let g:vimtex_compiler_method = 'latexrun'
-" let g:vimtex_compiler_latexrun = 'nvr'
-" let g:vimtex_latexmk_progname = 'nvr'
-let g:vimtex_compiler_progname = 'nvr'
-let g:vimtex_view_method = "zathura"
+if has('unix')
+    if has('mac')
+        let g:vimtex_view_method = "skim"
+        let g:vimtex_view_general_viewer
+                \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+        let g:vimtex_view_general_options = '-r @line @pdf @tex'
+    else
+        let g:latex_view_general_viewer = "zathura"
+        let g:vimtex_view_method = "zathura"
+    endif
+endif
+" let g:vimtex_compiler_progname = 'nvr'
 
-let g:vimtex_compiler_latexrun = {
-      \ 'backend' : "nvim",
-      \ 'background' : 1,
-      \ 'build_dir' : '',
-      \ 'options' : [
-      \   '--verbose-cmds',
-      \   '--latex-args="-synctex=1 -halt-on-error -shell-escape"',
-      \ ],
-      \}
+let g:vimtex_compiler_latexmk = { 'build_dir' : 'out', }
+
+
+" let g:vimtex_compiler_latexrun = {
+"       \ 'backend' : "nvim",
+"       \ 'background' : 1,
+"       \ 'build_dir' : '',
+"       \ 'options' : [
+"       \   '--verbose-cmds',
+"       \   '--latex-args="-synctex=1 -halt-on-error -shell-escape"',
+"       \ ],
+"       \}
 
 
 augroup lexical
