@@ -93,6 +93,7 @@ vim.opt.linebreak = true
 vim.opt.formatoptions:append('l')
 vim.opt.colorcolumn = '79'
 vim.opt.wrap = false
+vim.cmd("syntax off")
 
 -- Enable soft-wrapping and spell checking for text files
 vim.cmd [[
