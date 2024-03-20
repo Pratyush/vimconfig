@@ -1,3 +1,4 @@
+local vscode = require('vscode-neovim')
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -9,14 +10,17 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   })
 end
+
 vim.opt.rtp:prepend(lazypath)
+
 -- PLUGIN SETUP
 require('lazy').setup({
   {'rhysd/clever-f.vim'}, -- Better Find
   {'lervag/vimtex', ft = 'tex'}, -- LaTeX Plugins, lazy-loaded for tex files
+  {'tpope/vim-commentary'},
   {'tpope/vim-surround'},
   {'tpope/vim-repeat'},
-  {'xiyaowong/fast-cursor-move.nvim'}
+  -- {'xiyaowong/fast-cursor-move.nvim'}
 }, {
   -- Configuration options for lazy.nvim
 })
@@ -50,10 +54,13 @@ local function move(d)
 end
 
 
-vim.keymap.set({ 'v' }, 'gj', move('j'), { expr = true, noremap = false })
-vim.keymap.set({ 'v' }, 'gk', move('k'), { expr = true, noremap = false })
---[[ vim.api.nvim_set_keymap('n', 'j', 'gj', {})
-vim.api.nvim_set_keymap('n', 'k', 'gk', {}) ]]
+vim.keymap.set({ 'v' }, 'gj', move('j'), { expr = true, noremap = true })
+vim.keymap.set({ 'v' }, 'gk', move('k'), { expr = true, noremap = true })
+vim.api.nvim_set_keymap('n' , 'j', 'gj', {})
+vim.api.nvim_set_keymap('n' , 'k', 'gk', {})
+-- vim.api.nvim_set_keymap('v' , 'j', 'gj', {noremap = true})
+-- vim.api.nvim_set_keymap('v' , 'k', 'gk', {noremap = true})
+
 vim.api.nvim_set_keymap('' , 'H', '^', {noremap = true})
 vim.api.nvim_set_keymap('' , 'L', '$', {noremap = true})
 vim.api.nvim_set_keymap('v', 'L', 'g_', {noremap = true})
@@ -72,8 +79,20 @@ vim.keymap.set('n', 'V', 'v$', {noremap = true})
 vim.api.nvim_set_keymap('n', 'K', 'gt', {})
 vim.api.nvim_set_keymap('n', 'J', 'gT', {})
 
+vim.keymap.set('n', '<leader><leader>', ':noh<CR>', {noremap = true, silent = true})
 -- LaTeX Keybinds
-vim.keymap.set('n', '<leader>ll', ':VimtexCompile<CR>', {noremap = true})
+local function latex_compile()
+  vscode.call('latex-workshop.build')
+end
+local function latex_synctex()
+  vscode.call('latex-workshop.synctex')
+end
+local function latex_clean()
+  vscode.call('latex-workshop.clean')
+end
+vim.keymap.set('n', '<leader>ll', latex_compile, {expr=true, noremap = true})
+vim.keymap.set('n', '<leader>lv', latex_synctex, {expr=true, noremap = true})
+vim.keymap.set('n', '<leader>lc', latex_clean, {expr=true, noremap = true})
 
 -- BETTER VIM
 
@@ -88,22 +107,46 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.showmatch = true
-vim.keymap.set('n', '<leader><leader>', ':noh<CR>', {noremap = true, silent = true})
 vim.opt.linebreak = true
 vim.opt.formatoptions:append('l')
 vim.opt.colorcolumn = '79'
 vim.opt.wrap = false
+vim.opt.breakindent = true
 vim.cmd("syntax off")
+vim.opt.whichwrap:append {
+  ['<'] = true,
+  ['>'] = true,
+  h = true,
+  l = true,
+}
 
 -- Enable soft-wrapping and spell checking for text files
-vim.cmd [[
-  autocmd FileType mail,text,markdown,html,tex setlocal wrap
-  autocmd FileType text,markdown,html,tex set spell
-]]
+
+-- Set wrap for specific file types
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"mail", "text", "markdown", "html", "tex"},
+  callback = function() vim.opt_local.wrap = true end,
+})
+
+-- Enable spell checking for specific file types
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"text", "markdown", "html", "tex"},
+  callback = function() vim.opt_local.spell = true end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "tex",
+  command = "set iskeyword+=^_",
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "tex",
+  command = "set iskeyword+=^:",
+})
 
 -- Plugin specific settings
--- vim.g.surround_{char2nr('c')} = "\\\1command\1{\r}"
 vim.g.tex_fast = "mMr"
 vim.g.vimtex_imaps_enabled = 0
 vim.g.vimtex_quickfix_enabled = 0
 vim.g.vimtex_quickfix_mode = 2
+vim.g.vimtex_disable_directory_scan_main_file_detection = 0
