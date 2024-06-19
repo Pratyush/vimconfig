@@ -17,7 +17,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   {'rhysd/clever-f.vim'}, -- Better Find
   {'lervag/vimtex', ft = 'tex'}, -- LaTeX Plugins, lazy-loaded for tex files
-  {'tpope/vim-commentary'},
+  -- {'tpope/vim-commentary'},
   {'tpope/vim-surround'},
   {'tpope/vim-repeat'},
   -- {'xiyaowong/fast-cursor-move.nvim'}
@@ -75,9 +75,19 @@ vim.keymap.set('n', ';', ':')
 vim.keymap.set('n', 'Y', 'y$', {noremap = true})
 vim.keymap.set('n', 'V', 'v$', {noremap = true})
 
+
+-- Split management
+vim.api.nvim_set_keymap('n', '<leader>', '<C-w>', {})
+
 -- Tab Movement
 vim.api.nvim_set_keymap('n', 'K', 'gt', {})
 vim.api.nvim_set_keymap('n', 'J', 'gT', {})
+
+-- Commenting
+vim.api.nvim_set_keymap('x', 'gc', '<Plug>VSCodeCommentary', {})
+vim.api.nvim_set_keymap('n', 'gc', '<Plug>VSCodeCommentary', {})
+vim.api.nvim_set_keymap('o', 'gc', '<Plug>VSCodeCommentary', {})
+vim.api.nvim_set_keymap('n', 'gcc', '<Plug>VSCodeCommentaryLine', {})
 
 vim.keymap.set('n', '<leader><leader>', ':noh<CR>', {noremap = true, silent = true})
 -- LaTeX Keybinds
@@ -112,7 +122,8 @@ vim.opt.formatoptions:append('l')
 vim.opt.colorcolumn = '79'
 vim.opt.wrap = false
 vim.opt.breakindent = true
-vim.cmd("syntax off")
+vim.cmd("syntax on")
+vim.cmd('filetype plugin indent on')
 vim.opt.whichwrap:append {
   ['<'] = true,
   ['>'] = true,
