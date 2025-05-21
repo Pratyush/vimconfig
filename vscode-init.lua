@@ -20,7 +20,7 @@ require('lazy').setup({
   -- {'tpope/vim-commentary'},
   {'tpope/vim-surround'},
   {'tpope/vim-repeat'},
-  -- {'xiyaowong/fast-cursor-move.nvim'}
+  {'xiyaowong/fast-cursor-move.nvim'}
 }, {
   -- Configuration options for lazy.nvim
 })
@@ -139,12 +139,6 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function() vim.opt_local.wrap = true end,
 })
 
--- Enable spell checking for specific file types
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = {"text", "markdown", "html", "tex"},
-  callback = function() vim.opt_local.spell = true end,
-})
-
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "tex",
   command = "set iskeyword+=^_",
@@ -157,7 +151,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- Plugin specific settings
 vim.g.tex_fast = "mMr"
-vim.g.vimtex_imaps_enabled = 0
+-- vim.g.vimtex_imaps_enabled = 0
 vim.g.vimtex_quickfix_enabled = 0
 vim.g.vimtex_quickfix_mode = 2
 vim.g.vimtex_disable_directory_scan_main_file_detection = 0
